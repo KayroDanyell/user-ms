@@ -13,6 +13,6 @@ use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
-Router::get('/favicon.ico', function () {
-    return '';
+Router::get('/healthy', function () {
+    return ['User-MS'=>'healthy'];
 });

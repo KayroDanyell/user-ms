@@ -29,4 +29,13 @@ class UserInfo extends Model
      * The attributes that should be cast to native types.
      */
     protected array $casts = [];
+
+    public function saveUserInfo(array $data)
+    {
+        $user = new UserInfo();
+        $user->user_id = $data['user_id'];
+        $user->field   = $data['field'];
+        $user->value   = $data['value'];
+        $user->save();
+    }
 }

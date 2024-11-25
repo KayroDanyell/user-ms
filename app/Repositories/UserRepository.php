@@ -2,41 +2,42 @@
 
 namespace App\Repositories;
 
+use App\Interface\Repository\UserRepositoryInterface;
 use App\Model\User;
 use App\Model\UserInfo;
+use Hyperf\Database\Model\Collection;
+use Hyperf\Stringable\Str;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
 
     public function __construct(){}
 
-    public function getUser(int $userId) : User
+    public function getUser(string $userId) : Collection
     {
         $userInfo = self::getUserInfo($userId);
-
-        $user = new User();
-        $userInfo->each(function ($item) use (&$user) {
-            $user->{$item->field} = $item->value;
-        });
-        $user->fields = $userInfo->pluck('field')->toArray();
-
-        return $user;
+        return $userInfo;
     }
 
-    public function getUserInfo(int $id)
+    public function getUserInfo(string $id) : Collection
     {
         return UserInfo::where('user_id', $id)->get();
     }
 
-    public function saveUserInfo(array $data)
+    public function saveUser(array $user) : Collection
     {
-        $user = new UserInfo();
-        $user->user_id = $data['user_id'];
-        $user->field   = $data['field'];
-        $user->value   = $data['value'];
-        $user->save();
+        $createdUsers = new Collection();
+        $userId = Str::uuid();
+        $keys = array_keys($user);
+        foreach ($keys as $key => $value)  {
+
+            $userInfo = new UserInfo();
+            $userInfo->user_id = $userId;
+            $userInfo->field = $value;
+            $userInfo->value = $user[$value];
+            $userInfo->save();
+            $createdUsers->add($userInfo);
+        }
+        return $createdUsers;
     }
-
-
-
 }
